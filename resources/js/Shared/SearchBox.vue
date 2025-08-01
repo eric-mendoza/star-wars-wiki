@@ -66,6 +66,7 @@ export default {
     methods: {
         search() {
             console.log("Searching...")
+            this.$emit("update:loading", true);
         }
     },
     computed: {

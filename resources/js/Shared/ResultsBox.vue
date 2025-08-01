@@ -7,7 +7,13 @@
 
         <!--    Body    -->
         <div
-            v-if="results.length === 0"
+            v-if="loading"
+            class="flex flex-col text-xs text-gray-300 font-bold justify-center items-center h-full"
+        >
+            <span>Searching...</span>
+        </div>
+        <div
+            v-else-if="results.length === 0"
             class="flex flex-col text-xs text-gray-300 font-bold justify-center items-center h-full"
         >
             <span>There are zero matches.</span>
@@ -24,7 +30,9 @@ import {defineComponent} from "vue";
 
 export default defineComponent({
     components: {Card},
-    props: {},
+    props: {
+        loading: Boolean,
+    },
     data() {
         return {
             results: [],
