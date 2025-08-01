@@ -1,6 +1,9 @@
 <template>
-    <div class="min-h-screen bg-gray-100 p-6">
-        <header class="text-xl font-semibold mb-4">Header</header>
+    <div class="min-h-screen bg-gray-100">
+        <Header />
         <main><slot /></main>
     </div>
 </template>
+<script setup lang="ts">
+import Header from "./Header.vue";
+</script>

@@ -1,3 +1,4 @@
+import tailwindElements from '@tailwindplus/elements';
 export default {
     content: [
         './resources/**/*.blade.php',
@@ -5,7 +6,11 @@ export default {
         './resources/**/*.vue',
     ],
     theme: {
-        extend: {},
+        extend: {
+
+        },
     },
-    plugins: [],
+    plugins: [
+        tailwindElements
+    ],
 };
