@@ -1,7 +1,6 @@
 <template>
-<div class="flex">
-    <Card>
-        <p class="mb-4 text-xs font-semibold text-[#383838] w-xs">
+    <Card class="w-xs h-min">
+        <p class="mb-4 text-xs font-semibold text-[#383838]">
             What are you searching for?
         </p>
 
@@ -40,7 +39,6 @@
             SEARCH
         </button>
     </Card>
-</div>
 </template>
 
 <script>
