@@ -29,6 +29,7 @@
             type="text"
             placeholder="e.g. Chewbacca, Yida, Boba Fett"
             class="rounded-md border border-gray-300 px-3 py-2 text-xs shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 mb-4"
+            @keydown.enter="search"
         />
 
         <button
