@@ -36,42 +36,64 @@
             :disabled="searchIsEmpty"
             @click="search"
         >
-            SEARCH
+            {{loading ? "SEARCHING..." : "SEARCH"}}
         </button>
     </Card>
 </template>
 
 <script>
 import Card from "../Atoms/Card.vue";
+import {search} from "../api/search.js";
 export default {
     name: "SearchBox",
     components: {Card},
     props: {},
     data() {
         return {
-            selectedType: "people",
+            selectedType: "PEOPLE",
             searchInput: "",
             searchOptions: [
                 {
                     label: "People",
-                    value: "people"
+                    value: "PEOPLE"
                 },
                 {
                     label: "Movies",
-                    value: "movies"
+                    value: "MOVIES"
                 }
-            ]
+            ],
+            loading: false,
         }
     },
     methods: {
-        search() {
-            console.log("Searching...")
-            this.$emit("update:loading", true);
+        async search() {
+            // Avoid double search
+            if (this.loading) {
+                return
+            }
+
+            this.loading = true;
+            try {
+                const { data } = await search(this.searchInput, this.selectedType);
+                this.$emit("update:results", data);
+            } catch (error) {
+                console.error(error);
+                this.$toast?.error?.(
+                    error?.response?.data?.message || "Failed to fetch search results. Please try again."
+                );
+            } finally {
+                this.loading = false;
+            }
         }
     },
     computed: {
         searchIsEmpty() {
             return this.searchInput.length === 0;
+        }
+    },
+    watch: {
+        loading() {
+            this.$emit("update:loading", this.loading);
         }
     }
 }

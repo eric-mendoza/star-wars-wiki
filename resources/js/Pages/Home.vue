@@ -6,6 +6,7 @@
         />
         <ResultsBox
             :loading="loading"
+            :results="results"
         />
     </div>
 </template>
