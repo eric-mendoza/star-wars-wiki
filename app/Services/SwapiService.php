@@ -63,13 +63,22 @@ class SwapiService extends Service
             'hair_color' => $properties['hair_color'] ?? null,
             'height' => $properties['height'] ?? null,
             'mass' => $properties['mass'] ?? null,
-            'movies' => $properties['films'] ?? null,
+            'movies' => $properties['films'] ?? [],
         ]);
     }
 
     public function getMovieById($id): JsonResponse
     {
-        $person = $this->swapiRepository->getMovieById($id);
-        return response()->json($person);
+        $response = $this->swapiRepository->getMovieById($id);
+        $movie = $response['result'] ?? null;
+        if (is_null($movie)) {
+            return response()->json(['message' => 'Movie not found'], 404);
+        }
+        $properties = $movie['properties'];
+        return response()->json([
+            'id' => $movie['uid'],
+            'opening_crawl' => $properties['opening_crawl'],
+            'characters' => $properties['characters'] ?? [],
+        ]);
     }
 }
