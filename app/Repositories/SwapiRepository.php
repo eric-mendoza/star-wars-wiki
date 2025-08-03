@@ -22,4 +22,14 @@ class SwapiRepository extends Repository
         ]);
         return $response->json();
     }
+
+    public function getPeopleById(string $id): array {
+        $response = Http::get(self::BASE_URL . '/' . self::PEOPLE_PATH . '/' . $id);
+        return $response->json();
+    }
+
+    public function getMovieById(string $id): array {
+        $response = Http::get(self::BASE_URL . '/' . self::MOVIE_PATH . '/' . $id);
+        return $response->json();
+    }
 }
