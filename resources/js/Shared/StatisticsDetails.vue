@@ -12,7 +12,7 @@
             <h2 class="font-bold mb-4 min-h-0">Statistics</h2>
             <horizontal-rule />
 
-            <div class="mt-4 grid grid-cols-1 gap-2 text-sm">
+            <div class="mt-4 grid grid-cols-1 gap-1 text-sm">
                 <div class="flex gap-x-3">
                     <span class="font-bold text-gray-700">Total Searches:</span>
                     <span class="text-gray-900">{{ statistics.total }}</span>
@@ -42,6 +42,15 @@
                     <ul class="ml-4 mt-1 list-disc text-gray-900">
                         <li v-for="(count, browser) in statistics.top_browsers" :key="browser">
                             {{ browser }} - {{ count }}
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="font-bold text-gray-700">Top Endpoints:</span>
+                    <ul class="ml-4 mt-1 mb-2 list-disc text-gray-900">
+                        <li v-for="(count, endpoint) in statistics.top_endpoints" :key="endpoint">
+                            {{ endpoint }} - {{ count }}
                         </li>
                     </ul>
                 </div>

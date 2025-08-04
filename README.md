@@ -1,61 +1,116 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Star Wars Wiki
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a full-stack web application built as an exercise. It allows users to search characters and movies from the [Star Wars API (SWAPI)](https://swapi.tech), explore their details, and view statistics about past queries.
 
-## About Laravel
+The project is built using:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Frontend**: Vue.js 3 with TailwindCSS
+- **Backend**: Laravel 12 (PHP 8.4)
+- **Database**: MySQL (via Docker)
+- **Queue**: Laravel queue with scheduled jobs
+- **Containerization**: Laravel Sail (Docker)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Search and explore Star Wars **people** and **movies**
+- Detailed view of movies with **clickable characters**
+- Backend **caching** using Laravel Cache
+- Endpoint and job system to calculate **statistics**:
+    - Top queried endpoints
+    - Average query duration
+    - Most active search hour
+    - Popular browsers
+    - Locations (All unknown)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Setup Instructions
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+> **Requirements:**
+> - Docker installed
+> - Node.js (v18 recommended)
+> - Composer
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. Clone the repo
 
-## Laravel Sponsors
+```bash
+git clone https://github.com/eric-mendoza/star-wars-wiki.git
+cd star-wars-wiki
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 2. Copy environment variables
 
-### Premium Partners
+```bash
+cp .env.example .env
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 3. Start the Docker containers (Laravel Sail)
 
-## Contributing
+```bash
+./vendor/bin/sail up -d
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    If sail is not available yet, run:
 
-## Code of Conduct
+    composer install
+    ./vendor/bin/sail up -d
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4. Install Node dependencies
 
-## Security Vulnerabilities
+```bash
+npm install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 5. Run the frontend (Vite dev server)
 
-## License
+```bash
+npm run dev
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 6. Run Laravel migrations (if needed)
+
+```bash
+./vendor/bin/sail artisan migrate
+```
+
+---
+
+## Scheduled Statistics Job
+
+The app includes a scheduled job that recomputes statistics every 5 minutes using Laravel's scheduler and queue system.
+
+To ensure it works in your local environment, the scheduler is registered inside AppServiceProvider via:
+
+```php
+$schedule->call(function () {
+event(new StatisticsUpdateRequested());
+})->everyMinute(); // for testing, change to everyFiveMinutes() for production
+```
+---
+## Testing the API
+
+Once up and running, you can hit the API from your browser or use tools like Postman.
+
+Example endpoints:
+
+```
+    /api/v1/search?type=people&term=luke
+
+    /api/v1/people/{id}
+
+    /api/v1/movies/{id}
+
+    /api/v1/statistics
+```
+
+---
+## Notes
+
+    The frontend uses Inertia.js to bridge Vue and Laravel.
+
+    Caching is used to reduce unnecessary calls to SWAPI.
+
+    Statistics use the QueryLog model to track endpoint usage and performance.
+
+
+

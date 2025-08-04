@@ -52,11 +52,23 @@ class ComputeQueryStatistics implements ShouldQueue
                 ->sortDesc()
                 ->take(5);
 
+            $endpointCounts = $logs
+                ->map(function ($log) {
+                    return preg_replace('#^/?api/v1/#', '', $log->endpoint);
+
+                })
+                ->filter()
+                ->groupBy(fn($endpoint) => $endpoint)
+                ->map->count()
+                ->sortDesc()
+                ->take(5);
+
             $stats = [
                 'avg_duration' => $avgDuration,
                 'popular_hour' => $popularHour,
                 'top_locations' => $topLocations,
                 'top_browsers' => $topBrowsers,
+                'top_endpoints' => $endpointCounts,
                 'total' => $total,
             ];
 
