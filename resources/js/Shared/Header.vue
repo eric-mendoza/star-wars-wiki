@@ -86,7 +86,7 @@ import {
 import { ChevronDownIcon } from '@heroicons/vue/20/solid'
 
 const menus = [
-    { name: 'Analytics', description: 'Check most used endpoints', href: '#', icon: ChartPieIcon },
+    { name: 'Analytics', description: 'Check most used endpoints', href: 'statistics', icon: ChartPieIcon },
 ]
 
 const mobileMenuOpen = ref(false)
