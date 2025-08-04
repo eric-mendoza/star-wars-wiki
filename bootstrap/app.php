@@ -26,7 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
         $schedule->call(function () {
             event(new StatisticsUpdateRequested());
-        })->everyFiveMinutes();
+        })->everyMinute(); // TODO: Change to 5 minutes
     })
     ->withProviders([
         EventServiceProvider::class,

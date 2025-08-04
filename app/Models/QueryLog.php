@@ -9,4 +9,8 @@ class QueryLog extends Model
     public $timestamps = false;
 
     protected $fillable = ['endpoint', 'duration', 'ip', 'location', 'browser', 'created_at'];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
 }

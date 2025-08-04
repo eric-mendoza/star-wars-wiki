@@ -6,6 +6,8 @@ use App\Models\QueryLog;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ComputeQueryStatistics implements ShouldQueue
 {
@@ -24,22 +26,45 @@ class ComputeQueryStatistics implements ShouldQueue
      */
     public function handle(): void
     {
-        $since = now()->subDays(7);
-        $logs = QueryLog::where('created_at', '>=', $since)->get();
+        try {
+            $since = now()->subDays(7);
+            $logs = QueryLog::where('created_at', '>=', $since)->get();
 
-        $total = $logs->count();
-        $avgDuration = round($logs->avg('duration'), 3);
-        $popularHour = $logs->groupBy(fn($log) => $log->created_at->format('H'))->map->count()->sortDesc()->keys()->first();
-        $topLocations = $logs->groupBy('location')->map->count()->sortDesc()->take(5);
-        $topBrowsers = $logs->groupBy('browser')->map->count()->sortDesc()->take(5);
+            $total = $logs->count();
+            $avgDuration = round($logs->avg('duration'), 3);
 
-        $stats = [
-            'avg_duration' => $avgDuration,
-            'popular_hour' => $popularHour,
-            'top_locations' => $topLocations,
-            'top_browsers' => $topBrowsers,
-        ];
+            $popularHour = $logs
+                ->groupBy(fn($log) => $log->created_at->format('H'))
+                ->map->count()
+                ->sortDesc()
+                ->keys()
+                ->first();
 
-        Cache::put('query_statistics', $stats, now()->addMinutes(10));
+            $topLocations = $logs
+                ->groupBy('location')
+                ->map->count()
+                ->sortDesc()
+                ->take(5);
+
+            $topBrowsers = $logs
+                ->groupBy('browser')
+                ->map->count()
+                ->sortDesc()
+                ->take(5);
+
+            $stats = [
+                'avg_duration' => $avgDuration,
+                'popular_hour' => $popularHour,
+                'top_locations' => $topLocations,
+                'top_browsers' => $topBrowsers,
+                'total' => $total,
+            ];
+
+            Cache::put('statistics', $stats, now()->addMinutes(10));
+
+            Log::info('[Job] ComputeQueryStatistics completed successfully.');
+        } catch (Throwable $e) {
+            Log::error('[Job] ComputeQueryStatistics failed: ' . $e->getMessage());
+        }
     }
 }

@@ -78,6 +78,22 @@ services:
         environment:
             WWWUSER: '${WWWUSER}'
             LARAVEL_SAIL: 1
+    scheduler:
+        image: sail-8.4/app
+        depends_on:
+            - laravel.test
+        volumes:
+            - ./:/var/www/html
+        working_dir: /var/www/html
+        entrypoint: /bin/sh -c
+        command: |
+            "while [ true ]; do
+              php artisan schedule:run >> /dev/null 2>&1;
+              sleep 60;
+            done"
+        networks:
+            - sail
+
 networks:
     sail:
         driver: bridge

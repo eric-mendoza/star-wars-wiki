@@ -8,10 +8,44 @@
         </template>
 
         <!--    Movie    -->
-        <template v-else>
+        <template v-else-if="statistics">
             <h2 class="font-bold mb-4 min-h-0">Statistics</h2>
             <horizontal-rule />
 
+            <div class="mt-4 grid grid-cols-1 gap-2 text-sm">
+                <div class="flex gap-x-3">
+                    <span class="font-bold text-gray-700">Total Searches:</span>
+                    <span class="text-gray-900">{{ statistics.total }}</span>
+                </div>
+
+                <div class="flex gap-x-3">
+                    <span class="font-bold text-gray-700">Avg Duration (s):</span>
+                    <span class="text-gray-900">{{ statistics.avg_duration.toFixed(3) }}ms</span>
+                </div>
+
+                <div class="flex gap-x-3">
+                    <span class="font-bold text-gray-700">Popular Hour:</span>
+                    <span class="text-gray-900">{{ statistics.popular_hour }}:00 (UTC)</span>
+                </div>
+
+                <div>
+                    <span class="font-bold text-gray-700">Top Locations:</span>
+                    <ul class="ml-4 mt-1 list-disc text-gray-900">
+                        <li v-for="(count, location) in statistics.top_locations" :key="location">
+                            {{ location || 'Unknown' }} - {{ count }}
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <span class="font-bold text-gray-700">Top Browsers:</span>
+                    <ul class="ml-4 mt-1 list-disc text-gray-900">
+                        <li v-for="(count, browser) in statistics.top_browsers" :key="browser">
+                            {{ browser }} - {{ count }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </template>
 
         <a
