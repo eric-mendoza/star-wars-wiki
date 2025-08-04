@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Responses\PaginatedResponse;
 use Illuminate\Http\JsonResponse;
 use App\Repositories\SwapiRepository;
+use Illuminate\Support\Facades\Cache;
 
 
 class SwapiService extends Service
@@ -47,39 +48,64 @@ class SwapiService extends Service
 
     public function getPeopleById($id): JsonResponse
     {
-        $response = $this->swapiRepository->getPeopleById($id);
-        $person = $response['result'] ?? null;
-        if (is_null($person)) {
+        $cacheKey = "person:$id";
+
+        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($id) {
+            $response = $this->swapiRepository->getPeopleById($id);
+            $person = $response['result'] ?? null;
+
+            if (is_null($person)) {
+                return null;
+            }
+
+            $properties = $person['properties'];
+
+            return [
+                'id' => $person['uid'],
+                'name' => $properties['name'],
+                'birth_year' => $properties['birth_year'] ?? null,
+                'gender' => $properties['gender'] ?? null,
+                'eye_color' => $properties['eye_color'] ?? null,
+                'hair_color' => $properties['hair_color'] ?? null,
+                'height' => $properties['height'] ?? null,
+                'mass' => $properties['mass'] ?? null,
+                'movies' => $properties['films'] ?? [],
+            ];
+        });
+
+        if (is_null($data)) {
             return response()->json(['message' => 'Person not found'], 404);
         }
-        $properties = $person['properties'];
 
-        return response()->json([
-            'id' => $person['uid'],
-            'name' => $properties['name'],
-            'birth_year' => $properties['birth_year'] ?? null,
-            'gender' => $properties['gender'] ?? null,
-            'eye_color' => $properties['eye_color'] ?? null,
-            'hair_color' => $properties['hair_color'] ?? null,
-            'height' => $properties['height'] ?? null,
-            'mass' => $properties['mass'] ?? null,
-            'movies' => $properties['films'] ?? [],
-        ]);
+        return response()->json($data);
     }
 
     public function getMovieById($id): JsonResponse
     {
-        $response = $this->swapiRepository->getMovieById($id);
-        $movie = $response['result'] ?? null;
-        if (is_null($movie)) {
+        $cacheKey = "movie:$id";
+
+        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($id) {
+            $response = $this->swapiRepository->getMovieById($id);
+            $movie = $response['result'] ?? null;
+
+            if (is_null($movie)) {
+                return null;
+            }
+
+            $properties = $movie['properties'];
+
+            return [
+                'id' => $movie['uid'],
+                'title' => $properties['title'],
+                'opening_crawl' => $properties['opening_crawl'],
+                'characters' => $properties['characters'] ?? [],
+            ];
+        });
+
+        if (is_null($data)) {
             return response()->json(['message' => 'Movie not found'], 404);
         }
-        $properties = $movie['properties'];
-        return response()->json([
-            'id' => $movie['uid'],
-            'title' => $properties['title'],
-            'opening_crawl' => $properties['opening_crawl'],
-            'characters' => $properties['characters'] ?? [],
-        ]);
+
+        return response()->json($data);
     }
 }
