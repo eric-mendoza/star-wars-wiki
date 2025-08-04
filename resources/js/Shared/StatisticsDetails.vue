@@ -29,19 +29,35 @@ import {defineComponent} from "vue";
 import Card from "../Atoms/Card.vue";
 import HorizontalRule from "../Atoms/HorizontalRule.vue";
 import {getMovieById} from "../api/getMovieById.js";
+import {getStatistics} from "../api/getStatistics.js";
 
 export default defineComponent({
     name: "StatisticsDetails",
     components: {HorizontalRule, Card},
     props: {},
     mounted() {
+        this.fetchStatistics()
     },
     data() {
         return {
             loading: false,
+            statistics: null,
         }
     },
     methods: {
+        async fetchStatistics() {
+            this.loading = true;
+            try {
+                this.statistics = await getStatistics();
+            } catch (error) {
+                console.error(error);
+                this.$toast?.error?.(
+                    error?.response?.data?.message || "Error fetching statistics.",
+                );
+            } finally {
+                this.loading = false;
+            }
+        }
     }
 })
 

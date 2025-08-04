@@ -1,6 +1,10 @@
 <?php
 
+use App\Events\StatisticsUpdateRequested;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\LogQueryMetadata;
+use App\Providers\EventServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,7 +18,17 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->appendToGroup('web', HandleInertiaRequests::class);
+        $middleware->appendToGroup('api', LogQueryMetadata::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })
+    ->withSchedule(function (Schedule $schedule) {
+        $schedule->call(function () {
+            event(new StatisticsUpdateRequested());
+        })->everyFiveMinutes();
+    })
+    ->withProviders([
+        EventServiceProvider::class,
+    ])
+    ->create();

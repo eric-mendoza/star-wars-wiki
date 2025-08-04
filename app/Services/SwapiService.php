@@ -51,7 +51,7 @@ class SwapiService extends Service
     {
         $cacheKey = "person:$id";
 
-        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($id) {
+        $data = Cache::remember($cacheKey, now()->addMinutes(1440), function () use ($id) {
             $response = $this->swapiRepository->getPeopleById($id);
             $person = $response['result'] ?? null;
 
@@ -85,7 +85,7 @@ class SwapiService extends Service
     {
         $cacheKey = "movie:$id";
 
-        $data = Cache::remember($cacheKey, now()->addMinutes(30), function () use ($id) {
+        $data = Cache::remember($cacheKey, now()->addMinutes(1440), function () use ($id) {
             $response = $this->swapiRepository->getMovieById($id);
             $movie = $response['result'] ?? null;
 
@@ -135,7 +135,7 @@ class SwapiService extends Service
     {
         $cacheKey = "person:$id:movies";
 
-        return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($id) {
+        return Cache::remember($cacheKey, now()->addMinutes(1440), function () use ($id) {
             $moviesResponse = $this->swapiRepository->getAllMovies();
             $movies = $moviesResponse['result'] ?? [];
 
