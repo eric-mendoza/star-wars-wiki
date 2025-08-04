@@ -24,10 +24,17 @@
                     <h3 class="font-bold">Characters</h3>
                     <horizontal-rule />
 
-                    <div class="flex-1 min-h-0 flex flex-col h-full overflow-y-auto">
-                        <a v-for="character in movie.characters" class="text-blue-600 hover:underline" href="/movies/1">
-                            {{ character }}
-                        </a>
+                    <div class="flex-1 min-h-0 h-full overflow-y-auto">
+                        <p class="text-blue-600 text-sm leading-tight">
+                            <template v-for="(character, index) in movie.characters" :key="character.id">
+                                <a
+                                    :href="`/people/${character.id}`"
+                                    class="hover:underline inline"
+                                >
+                                    {{ character.name }}
+                                </a><span v-if="index < movie.characters.length - 1">, </span>
+                            </template>
+                        </p>
                     </div>
                     <span v-if="!movie.characters" class="text-gray-300 text-xs">
                         Not found

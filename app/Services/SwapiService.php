@@ -6,6 +6,7 @@ use App\Http\Responses\PaginatedResponse;
 use Illuminate\Http\JsonResponse;
 use App\Repositories\SwapiRepository;
 use Illuminate\Support\Facades\Cache;
+use PhpParser\Node\Expr\Array_;
 
 
 class SwapiService extends Service
@@ -69,7 +70,7 @@ class SwapiService extends Service
                 'hair_color' => $properties['hair_color'] ?? null,
                 'height' => $properties['height'] ?? null,
                 'mass' => $properties['mass'] ?? null,
-                'movies' => $properties['films'] ?? [],
+                'movies' => $this->findPersonMovies($id),
             ];
         });
 
@@ -94,11 +95,24 @@ class SwapiService extends Service
 
             $properties = $movie['properties'];
 
+            // Resolve characters names
+            $characterUrls = $properties['characters'] ?? [];
+            $characterIds = array_map(function ($url) {
+                return basename($url);
+            }, $characterUrls);
+
+            // Fetch and transform character data
+            $characters = collect($characterIds)->map(function ($characterId) {
+                $characterResponse = app(self::class)->getPeopleById($characterId);
+                $characterData = $characterResponse->getData(true);
+                return $characterData['message'] ?? null ? null : $characterData;
+            })->filter()->values()->all();
+
             return [
                 'id' => $movie['uid'],
                 'title' => $properties['title'],
                 'opening_crawl' => $properties['opening_crawl'],
-                'characters' => $properties['characters'] ?? [],
+                'characters' => $characters,
             ];
         });
 
@@ -108,4 +122,42 @@ class SwapiService extends Service
 
         return response()->json($data);
     }
+
+
+    /**
+     * This helper function was added to find in which movies a character shows up. The SWAPI API is not returning the
+     * films even though the extended=true flag was passed. This endpoints searches for a specific character in all the
+     * movies and caches the result.
+     * @param $id person id
+     * @return Array movies
+    */
+    public function findPersonMovies($id): array
+    {
+        $cacheKey = "person:$id:movies";
+
+        return Cache::remember($cacheKey, now()->addMinutes(30), function () use ($id) {
+            $moviesResponse = $this->swapiRepository->getAllMovies();
+            $movies = $moviesResponse['result'] ?? [];
+
+            $matchedMovies = [];
+
+            foreach ($movies as $movie) {
+                $properties = $movie['properties'];
+                $characterUrls = $properties['characters'] ?? [];
+
+                foreach ($characterUrls as $url) {
+                    if (basename($url) == $id) {
+                        $matchedMovies[] = [
+                            'id' => $movie['uid'],
+                            'title' => $properties['title'],
+                        ];
+                        break;
+                    }
+                }
+            }
+
+            return $matchedMovies;
+        });
+    }
+
 }

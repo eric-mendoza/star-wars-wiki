@@ -30,10 +30,10 @@
                     <horizontal-rule />
 
                     <!--      TODO: BUG - SWAPI is not returning films with characters       -->
-                    <a v-for="film in person.films" class="text-blue-600 hover:underline" href="/movies/1">
-                        Return of the Jedi
+                    <a v-for="movie in person.movies" class="text-blue-600 hover:underline" :href="`/movies/${movie.id}`">
+                        {{movie.title}}
                     </a>
-                    <span v-if="!person.films" class="text-gray-300 text-xs">
+                    <span v-if="!person.movies" class="text-gray-300 text-xs">
                         Not found
                     </span>
                 </div>

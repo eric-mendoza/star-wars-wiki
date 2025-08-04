@@ -32,4 +32,9 @@ class SwapiRepository extends Repository
         $response = Http::get(self::BASE_URL . '/' . self::MOVIE_PATH . '/' . $id);
         return $response->json();
     }
+
+    public function getAllMovies(): array {
+        $response = Http::get(self::BASE_URL . '/' . self::MOVIE_PATH);
+        return $response->json();
+    }
 }
