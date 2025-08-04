@@ -77,6 +77,7 @@ class SwapiService extends Service
         $properties = $movie['properties'];
         return response()->json([
             'id' => $movie['uid'],
+            'title' => $properties['title'],
             'opening_crawl' => $properties['opening_crawl'],
             'characters' => $properties['characters'] ?? [],
         ]);

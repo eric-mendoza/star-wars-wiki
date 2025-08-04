@@ -23,7 +23,16 @@ export default {
     },
     methods: {
         showDetails() {
-
+            switch (this.type) {
+                case "PEOPLE":
+                    this.$inertia.visit(`/people/${this.id}`);
+                    break;
+                case "MOVIES":
+                    this.$inertia.visit(`/movies/${this.id}`);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
