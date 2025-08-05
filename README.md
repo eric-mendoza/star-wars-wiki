@@ -67,7 +67,7 @@ npm install
 npm run dev
 ```
 
-### 6. Run Laravel migrations (if needed)
+### 6. Run Laravel migrations
 
 ```bash
 ./vendor/bin/sail artisan migrate
