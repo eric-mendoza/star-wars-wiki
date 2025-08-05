@@ -31,12 +31,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
-                                <a v-for="item in callsToAction" :key="item.name" :href="item.href" class="flex items-center justify-center gap-x-2.5 p-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-100">
-                                    <component :is="item.icon" class="size-5 flex-none text-gray-400" aria-hidden="true" />
-                                    {{ item.name }}
-                                </a>
-                            </div>
                         </PopoverPanel>
                     </transition>
                 </Popover>
@@ -57,7 +51,7 @@
                 <div class="mt-6 flow-root">
                     <div class="-my-6 divide-y divide-gray-500/10">
                         <div class="space-y-2 py-6">
-                            <a v-for="menu in menus" href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                            <a v-for="menu in menus" :href="menu.href" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
                                 {{menu.name}}
                             </a>
                         </div>
